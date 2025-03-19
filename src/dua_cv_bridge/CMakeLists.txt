@@ -19,8 +19,9 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(eigen3_cmake_module REQUIRED)
-find_package(Eigen3 3.4 REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(OpenCV 4.11.0 REQUIRED)
 
 # Dynamic systems base library configuration
 add_library(dua_cv_bridge SHARED
@@ -32,9 +33,10 @@ target_include_directories(dua_cv_bridge PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 target_link_libraries(dua_cv_bridge
-  Eigen3::Eigen)
+  ${OpenCV_LIBS})
 ament_target_dependencies(dua_cv_bridge
-  )
+  rclcpp
+  sensor_msgs)
 
 # Libraries installation
 install(
