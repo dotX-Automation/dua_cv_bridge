@@ -59,6 +59,10 @@ cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg)
     cv_type = CV_8UC3;
   } else if (encoding == "bgra8" || encoding == "rgba8") {
     cv_type = CV_8UC4;
+  } else if (encoding == "bgr16" || encoding == "rgb16") {
+    cv_type = CV_16UC3;
+  } else if (encoding == "bgra16" || encoding == "rgba16") {
+    cv_type = CV_16UC4;
   } else {
     throw std::runtime_error(
       "dua_cv_bridge::dua_msg_to_frame - Encoding not supported: " + encoding);
@@ -73,6 +77,5 @@ cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg)
 
   return frame.clone();
 }
-
 
 }  // namespace dua_cv_bridge
