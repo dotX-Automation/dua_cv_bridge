@@ -1,9 +1,33 @@
+/**
+ * DUA cv bridge library base class.
+ *
+ * dotX Automation s.r.l. <info@dotxautomation.com>
+ *
+ * March 19, 2025
+ */
+
+/**
+ * Copyright 2024 dotX Automation s.r.l.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include <dua_cv_bridge/dua_cv_bridge.hpp>
 
 namespace dua_cv_bridge
 {
 
-Image::SharedPtr DUACVBridge::frame_to_msg(
+Image::SharedPtr dua_frame_to_msg(
   const cv::Mat & frame,
   const std::string & encoding)
 {
@@ -24,7 +48,7 @@ Image::SharedPtr DUACVBridge::frame_to_msg(
   return ros_image;
 }
 
-cv::Mat DUACVBridge::msg_to_frame(const Image::ConstSharedPtr & msg)
+cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg)
 {
   // Determine OpenCV type from ROS2 encoding
   int cv_type = 0;
@@ -37,7 +61,7 @@ cv::Mat DUACVBridge::msg_to_frame(const Image::ConstSharedPtr & msg)
     cv_type = CV_8UC4;
   } else {
     throw std::runtime_error(
-      "DUACVBridge::msg_to_frame - Encoding not supported: " + encoding);
+      "dua_cv_bridge::dua_msg_to_frame - Encoding not supported: " + encoding);
   }
 
   // Create OpenCV Mat from ROS2 Image message
