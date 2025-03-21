@@ -24,7 +24,7 @@ Image::SharedPtr DUACVBridge::frame_to_msg(
   return ros_image;
 }
 
-cv::Mat DUACVBridge::msg_to_frame(Image::SharedPtr & msg)
+cv::Mat DUACVBridge::msg_to_frame(const Image::ConstSharedPtr & msg)
 {
   // Determine OpenCV type from ROS2 encoding
   int cv_type = 0;

@@ -67,7 +67,7 @@ public:
    * @param msg  The ROS Image message to be converted.
    * @return           An OpenCV cv::Mat containing the converted data.
    */
-  static cv::Mat msg_to_frame(Image::SharedPtr & msg);
+  static cv::Mat msg_to_frame(const Image::ConstSharedPtr & msg);
 };
 
 }  // namespace dua_cv_bridge
