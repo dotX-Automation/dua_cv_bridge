@@ -64,8 +64,8 @@ endif()
 
 # Export all dependencies and library targets for this package
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(
-  Eigen3)
+  rclcpp
+  sensor_msgs)
 
 ament_package()

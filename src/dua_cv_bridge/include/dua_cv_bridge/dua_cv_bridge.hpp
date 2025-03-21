@@ -50,7 +50,7 @@ namespace dua_cv_bridge
  * @param encoding   The desired ROS2 encoding for the output Image.
  * @return           A sensor_msgs::msg::Image containing the converted data.
  */
-static Image::SharedPtr dua_frame_to_msg(
+Image::SharedPtr DUA_CV_BRIDGE_PUBLIC dua_frame_to_msg(
   const cv::Mat & frame,
   const std::string & encoding);
 
@@ -60,6 +60,6 @@ static Image::SharedPtr dua_frame_to_msg(
  * @param msg  The ROS Image message to be converted.
  * @return     An OpenCV cv::Mat containing the converted data.
  */
-static cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg);
+cv::Mat DUA_CV_BRIDGE_PUBLIC dua_msg_to_frame(const Image::ConstSharedPtr & msg);
 
 }  // namespace dua_cv_bridge
