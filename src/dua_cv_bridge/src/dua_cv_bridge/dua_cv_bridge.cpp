@@ -48,7 +48,7 @@ Image::SharedPtr dua_frame_to_msg(
   return ros_image;
 }
 
-cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg)
+void dua_msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
 {
   // Determine OpenCV type from ROS2 encoding
   int cv_type = 0;
@@ -69,13 +69,14 @@ cv::Mat dua_msg_to_frame(const Image::ConstSharedPtr & msg)
   }
 
   // Create OpenCV Mat from ROS2 Image message
-  cv::Mat frame(
+  cv::Mat tmp(
     msg->height,
     msg->width,
     cv_type,
     (void *)(msg->data.data()));
 
-  return frame.clone();
+  // Copy data to output frame
+  out_frame = tmp.clone();
 }
 
 }  // namespace dua_cv_bridge

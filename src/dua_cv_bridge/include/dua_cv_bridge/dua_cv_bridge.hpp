@@ -57,9 +57,9 @@ Image::SharedPtr DUA_CV_BRIDGE_PUBLIC dua_frame_to_msg(
 /**
  * @brief Converts a ROS2 sensor_msgs::msg::Image::SharedPtr message to an OpenCV cv::Mat.
  *
- * @param msg  The ROS Image message to be converted.
- * @return     An OpenCV cv::Mat containing the converted data.
+ * @param msg         The ROS Image message to be converted.
+ * @param out_frame   The output cv::Mat where the data will be stored.
  */
-cv::Mat DUA_CV_BRIDGE_PUBLIC dua_msg_to_frame(const Image::ConstSharedPtr & msg);
+void DUA_CV_BRIDGE_PUBLIC dua_msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame);
 
 }  // namespace dua_cv_bridge
