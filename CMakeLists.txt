@@ -19,13 +19,13 @@ endif()
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(OpenCV 4.11.0 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(OpenCV 4.11.0 REQUIRED)
 
 # Dynamic systems base library configuration
 add_library(dua_cv_bridge SHARED
-  src/dua_cv_bridge/dua_cv_bridge.cpp)
+  src/dua_cv_bridge.cpp)
 add_library(dua_cv_bridge::dua_cv_bridge ALIAS dua_cv_bridge)
 target_compile_features(dua_cv_bridge PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_compile_definitions(dua_cv_bridge PRIVATE "DUA_CV_BRIDGE_BUILDING_LIBRARY")
@@ -42,6 +42,7 @@ ament_target_dependencies(dua_cv_bridge
 install(
   DIRECTORY include/
   DESTINATION include)
+
 install(
   TARGETS dua_cv_bridge
   EXPORT export_${PROJECT_NAME}

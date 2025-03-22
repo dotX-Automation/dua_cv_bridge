@@ -28,9 +28,9 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include <string>
-#include <vector>
 #include <stdexcept>
+#include <cstring>
+#include <vector>
 
 #include <opencv2/core.hpp>
 
@@ -50,7 +50,7 @@ namespace dua_cv_bridge
  * @param encoding   The desired ROS2 encoding for the output Image.
  * @return           A sensor_msgs::msg::Image containing the converted data.
  */
-Image::SharedPtr DUA_CV_BRIDGE_PUBLIC dua_frame_to_msg(
+Image::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_msg(
   const cv::Mat & frame,
   const std::string & encoding);
 
@@ -60,6 +60,6 @@ Image::SharedPtr DUA_CV_BRIDGE_PUBLIC dua_frame_to_msg(
  * @param msg         The ROS Image message to be converted.
  * @param out_frame   The output cv::Mat where the data will be stored.
  */
-void DUA_CV_BRIDGE_PUBLIC dua_msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame);
+void DUA_CV_BRIDGE_PUBLIC msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame);
 
-}  // namespace dua_cv_bridge
+} // namespace dua_cv_bridge

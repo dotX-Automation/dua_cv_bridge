@@ -27,7 +27,7 @@
 namespace dua_cv_bridge
 {
 
-Image::SharedPtr dua_frame_to_msg(
+Image::SharedPtr frame_to_msg(
   const cv::Mat & frame,
   const std::string & encoding)
 {
@@ -43,12 +43,12 @@ Image::SharedPtr dua_frame_to_msg(
   // Copy frame data (this avoids the obsolete cv_bridge)
   size_t size = ros_image->step * frame.rows;
   ros_image->data.resize(size);
-  memcpy(ros_image->data.data(), frame.data, size);
+  ::memcpy(ros_image->data.data(), frame.data, size);
 
   return ros_image;
 }
 
-void dua_msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
+void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
 {
   // Determine OpenCV type from ROS2 encoding
   int cv_type = 0;
