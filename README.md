@@ -1,14 +1,12 @@
-# dua-template
+# dua_cv_bridge
 
-GitHub template repositories for projects based on the Distributed Unified Architecture.
-
-See [`dua-template.md`](dua-template.md) for more information.
+C++ base class library that creates a bridge between ROS2 image message and OpenCV cv::Mat, extending the DUA features.
 
 ---
 
 ## Copyright and License
 
-Copyright 2024 dotX Automation s.r.l.
+Copyright 2025 dotX Automation s.r.l.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
