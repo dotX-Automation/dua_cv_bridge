@@ -3,6 +3,8 @@ project(dua_cv_bridge)
 
 set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 
+cmake_policy(SET CMP0146 OLD)
+
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
