@@ -63,6 +63,10 @@ void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
     cv_type = CV_16UC3;
   } else if (encoding == "bgra16" || encoding == "rgba16") {
     cv_type = CV_16UC4;
+  } else if (encoding == "64FC1") {
+    cv_type = CV_64FC1;
+  } else if (encoding == "32FC1") {
+    cv_type = CV_32FC1;
   } else {
     throw std::runtime_error(
       "dua_cv_bridge::dua_msg_to_frame - Encoding not supported: " + encoding);
