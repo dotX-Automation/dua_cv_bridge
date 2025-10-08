@@ -48,6 +48,33 @@ Image::SharedPtr frame_to_msg(
   return ros_image;
 }
 
+CompressedImage::SharedPtr frame_to_msg(
+  const cv::Mat & frame,
+  const std::string & encoding,
+  int level)
+{
+  // Prepare compression data
+  std::vector<int> compression_params;
+  compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
+  compression_params.push_back(level);
+  compression_params.push_back(cv::IMWRITE_JPEG_OPTIMIZE);
+  compression_params.push_back(1);
+
+  // Prepare message
+  CompressedImage::SharedPtr ros_image = std::make_shared<CompressedImage>();
+  std::string format_str = encoding + "; jpeg " + encoding;
+  ros_image->set__format(format_str);
+
+  // Compress image
+  std::vector<uint8_t> compressed_data;
+  if (!cv::imencode(".jpg", frame, compressed_data, compression_params)) {
+    throw std::runtime_error("dua_cv_bridge::frame_to_msg: Failed to compress image");
+  }
+  ros_image->set__data(compressed_data);
+
+  return ros_image;
+}
+
 void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
 {
   // Determine OpenCV type from ROS2 encoding
@@ -69,7 +96,7 @@ void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
     cv_type = CV_32FC1;
   } else {
     throw std::runtime_error(
-      "dua_cv_bridge::dua_msg_to_frame - Encoding not supported: " + encoding);
+      "dua_cv_bridge::msg_to_frame: Encoding not supported: " + encoding);
   }
 
   // Create OpenCV Mat from ROS2 Image message
@@ -81,6 +108,20 @@ void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
 
   // Copy data to output frame
   out_frame = tmp.clone();
+}
+
+void msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame)
+{
+  // Consistency check
+  if (msg->data.empty()) {
+    return;
+  }
+
+  // Decompress image
+  out_frame = cv::imdecode(msg->data, cv::IMREAD_UNCHANGED);
+  if (out_frame.empty()) {
+    throw std::runtime_error("dua_cv_bridge::msg_to_frame: Failed to decompress image");
+  }
 }
 
 }  // namespace dua_cv_bridge

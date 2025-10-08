@@ -33,7 +33,9 @@
 #include <vector>
 
 #include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
 
+#include <sensor_msgs/msg/compressed_image.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/image_encodings.hpp>
 
@@ -55,11 +57,35 @@ Image::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_msg(
   const std::string & encoding);
 
 /**
- * @brief Converts a ROS2 sensor_msgs::msg::Image::SharedPtr message to an OpenCV cv::Mat.
+ * @brief Converts an OpenCV cv::Mat to a ROS2 sensor_msgs::msg::CompressedImage message.
+ *
+ * @param frame      The cv::Mat image data to be converted.
+ * @param encoding   The desired ROS2 encoding for the output Image.
+ * @param level      The JPEG compression level (0-100).
+ * @return           A sensor_msgs::msg::CompressedImage containing the converted data.
+ * @throws std::runtime_error if compression fails.
+ */
+CompressedImage::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_msg(
+  const cv::Mat & frame,
+  const std::string & encoding,
+  int level = 60);
+
+/**
+ * @brief Converts a ROS2 sensor_msgs::msg::Image message to an OpenCV cv::Mat.
  *
  * @param msg         The ROS Image message to be converted.
  * @param out_frame   The output cv::Mat where the data will be stored.
+ * @throws std::runtime error if encoding is not supported.
  */
 void DUA_CV_BRIDGE_PUBLIC msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame);
+
+/**
+ * @brief Converts a ROS2 sensor_msgs::msg::CompressedImage message to an OpenCV cv::Mat.
+ *
+ * @param msg         The ROS CompressedImage message to be converted.
+ * @param out_frame   The output cv::Mat where the data will be stored.
+ * @throws std::runtime_error if decompression fails.
+ */
+void DUA_CV_BRIDGE_PUBLIC msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame);
 
 } // namespace dua_cv_bridge
