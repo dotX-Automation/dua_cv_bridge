@@ -65,7 +65,7 @@ Image::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_msg(
  * @return           A sensor_msgs::msg::CompressedImage containing the converted data.
  * @throws std::runtime_error if compression fails.
  */
-CompressedImage::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_msg(
+CompressedImage::SharedPtr DUA_CV_BRIDGE_PUBLIC frame_to_compressed_msg(
   const cv::Mat & frame,
   const std::string & encoding,
   int level = 60);
@@ -86,6 +86,6 @@ void DUA_CV_BRIDGE_PUBLIC msg_to_frame(const Image::ConstSharedPtr & msg, cv::Ma
  * @param out_frame   The output cv::Mat where the data will be stored.
  * @throws std::runtime_error if decompression fails.
  */
-void DUA_CV_BRIDGE_PUBLIC msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame);
+void DUA_CV_BRIDGE_PUBLIC compressed_msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame);
 
 } // namespace dua_cv_bridge

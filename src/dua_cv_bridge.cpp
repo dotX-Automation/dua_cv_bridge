@@ -48,7 +48,7 @@ Image::SharedPtr frame_to_msg(
   return ros_image;
 }
 
-CompressedImage::SharedPtr frame_to_msg(
+CompressedImage::SharedPtr frame_to_compressed_msg(
   const cv::Mat & frame,
   const std::string & encoding,
   int level)
@@ -110,7 +110,7 @@ void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
   out_frame = tmp.clone();
 }
 
-void msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame)
+void compressed_msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Mat & out_frame)
 {
   // Consistency check
   if (msg->data.empty()) {
