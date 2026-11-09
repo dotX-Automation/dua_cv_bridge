@@ -1,5 +1,5 @@
 /**
- * DUA cv bridge library base class.
+ * DUA cv bridge library implementation.
  *
  * dotX Automation s.r.l. <info@dotxautomation.com>
  *
@@ -7,7 +7,7 @@
  */
 
 /**
- * Copyright 2024 dotX Automation s.r.l.
+ * Copyright 2025 dotX Automation s.r.l.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@
 namespace dua_cv_bridge
 {
 
-Image::SharedPtr frame_to_msg(
+Image::UniquePtr frame_to_msg(
   const cv::Mat & frame,
   const std::string & encoding)
 {
-  auto ros_image = std::make_shared<Image>();
+  auto ros_image = std::make_unique<Image>();
 
   // Set frame-relevant image contents
   ros_image->set__width(frame.cols);
@@ -40,37 +40,31 @@ Image::SharedPtr frame_to_msg(
   ros_image->set__step(frame.cols * frame.elemSize());
   ros_image->set__is_bigendian(false);
 
-  // Copy frame data (this avoids the obsolete cv_bridge)
-  size_t size = ros_image->step * frame.rows;
-  ros_image->data.resize(size);
-  ::memcpy(ros_image->data.data(), frame.data, size);
+  // Copy frame data through a view of the message buffer, which handles non-continuous frames
+  ros_image->data.resize(ros_image->step * frame.rows);
+  cv::Mat data_view(frame.rows, frame.cols, frame.type(), ros_image->data.data());
+  frame.copyTo(data_view);
 
   return ros_image;
 }
 
-CompressedImage::SharedPtr frame_to_compressed_msg(
+CompressedImage::UniquePtr frame_to_compressed_msg(
   const cv::Mat & frame,
   const std::string & encoding,
   int level)
 {
-  // Prepare compression data
-  std::vector<int> compression_params;
-  compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
-  compression_params.push_back(level);
-  compression_params.push_back(cv::IMWRITE_JPEG_OPTIMIZE);
-  compression_params.push_back(1);
+  auto ros_image = std::make_unique<CompressedImage>();
 
-  // Prepare message
-  CompressedImage::SharedPtr ros_image = std::make_shared<CompressedImage>();
-  std::string format_str = encoding + "; jpeg " + encoding;
-  ros_image->set__format(format_str);
+  // compressed_image_transport subscribers read the channel order from the part after "compressed"
+  ros_image->set__format(encoding + "; jpeg compressed " + encoding);
 
-  // Compress image
-  std::vector<uint8_t> compressed_data;
-  if (!cv::imencode(".jpg", frame, compressed_data, compression_params)) {
-    throw std::runtime_error("dua_cv_bridge::frame_to_msg: Failed to compress image");
+  // Compress image directly into the message
+  const std::vector<int> compression_params = {
+    cv::IMWRITE_JPEG_QUALITY, level,
+    cv::IMWRITE_JPEG_OPTIMIZE, 1};
+  if (!cv::imencode(".jpg", frame, ros_image->data, compression_params)) {
+    throw std::runtime_error("dua_cv_bridge::frame_to_compressed_msg: Failed to compress image");
   }
-  ros_image->set__data(compressed_data);
 
   return ros_image;
 }
@@ -99,12 +93,23 @@ void msg_to_frame(const Image::ConstSharedPtr & msg, cv::Mat & out_frame)
       "dua_cv_bridge::msg_to_frame: Encoding not supported: " + encoding);
   }
 
-  // Create OpenCV Mat from ROS2 Image message
+  // Check the message layout before reading its buffer, since it comes from outside
+  const size_t row_size = static_cast<size_t>(msg->width) * CV_ELEM_SIZE(cv_type);
+  if (msg->step < row_size ||
+    msg->step % CV_ELEM_SIZE1(cv_type) != 0 ||
+    msg->data.size() < static_cast<size_t>(msg->step) * msg->height)
+  {
+    throw std::runtime_error(
+      "dua_cv_bridge::msg_to_frame: Image size, step and data size do not match");
+  }
+
+  // Create OpenCV Mat from ROS2 Image message, honoring row padding
   cv::Mat tmp(
     msg->height,
     msg->width,
     cv_type,
-    (void *)(msg->data.data()));
+    const_cast<uint8_t *>(msg->data.data()),
+    msg->step);
 
   // Copy data to output frame
   out_frame = tmp.clone();
@@ -120,8 +125,8 @@ void compressed_msg_to_frame(const CompressedImage::ConstSharedPtr & msg, cv::Ma
   // Decompress image
   out_frame = cv::imdecode(msg->data, cv::IMREAD_UNCHANGED);
   if (out_frame.empty()) {
-    throw std::runtime_error("dua_cv_bridge::msg_to_frame: Failed to decompress image");
+    throw std::runtime_error("dua_cv_bridge::compressed_msg_to_frame: Failed to decompress image");
   }
 }
 
-}  // namespace dua_cv_bridge
+} // namespace dua_cv_bridge
